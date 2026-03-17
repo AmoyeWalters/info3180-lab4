@@ -109,8 +109,9 @@ def login():
 # the user ID stored in the session
 @login_manager.user_loader
 def load_user(id):
-    return db.session.execute(db.select(UserProfile).filter_by(id=id)).scalar()
-
+    return db.session.execute(
+        db.select(UserProfile).filter_by(id=int(id))
+    ).scalar()
 
 ###
 # The functions below should be applicable to all Flask apps.
