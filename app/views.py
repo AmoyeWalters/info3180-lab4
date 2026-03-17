@@ -5,11 +5,42 @@ from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.utils import secure_filename
 from app.models import UserProfile
 from app.forms import LoginForm, UploadForm
+from flask import send_from_directory
+
+
+def get_uploaded_images():
+    folder = os.path.join(os.getcwd(), app.config['UPLOAD_FOLDER'])
+    images = []
+
+    for file in os.listdir(folder):
+        images.append(file)
+
+    return images
 
 
 ###
 # Routing for your application.
 ###
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You have been logged out', 'info')
+    return redirect(url_for('home'))
+
+@app.route('/uploads/<filename>')
+def get_image(filename):
+    return send_from_directory(
+        os.path.join(os.getcwd(), app.config['UPLOAD_FOLDER']),
+        filename
+    )
+
+@app.route('/files')
+@login_required
+def files():
+    images = get_uploaded_images()
+    return render_template('files.html', images=images)
 
 @app.route('/')
 def home():
